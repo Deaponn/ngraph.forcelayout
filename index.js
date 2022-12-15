@@ -45,6 +45,7 @@ function createLayout(graph, physicsSettings) {
      * The system is stable if no further call to `step()` can improve the layout.
      */
     step: function() {
+        console.log("making step; edit works");
       if (bodiesCount === 0) {
         updateStableStatus(true);
         return true;
