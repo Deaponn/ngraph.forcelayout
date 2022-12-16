@@ -66,6 +66,7 @@ function createLayout(graph, physicsSettings) {
       movementData.stepsList.push(ratio)
 
       if (movementData.stepsList.length % 100 === 0) console.log(`Simulation is on ${movementData.stepsList.length} steps already. Current ratio is ${ratio}.`);
+      if (movementData.stepsList.length % 1000 === 0) console.log(movementData)
 
       if (isStableNow) console.log(movementData);
 
