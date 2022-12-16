@@ -64,7 +64,7 @@ function createLayout(graph, physicsSettings) {
       var isStableNow = ratio <= 0.01; // TODO: The number is somewhat arbitrary...
       movementData.stepsList.push({ ratio, lastMove })
 
-      if(!isStableNow) console.log(movementData);
+      if (isStableNow) console.log(movementData);
 
       if (wasStable !== isStableNow) {
         wasStable = isStableNow;
