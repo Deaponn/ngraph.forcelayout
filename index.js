@@ -44,6 +44,7 @@ function createLayout(graph, physicsSettings) {
      * The system is stable if no further call to `step()` can improve the layout.
      */
     step: function() {
+        console.log("change test")
       if (bodiesCount === 0) return true; // TODO: This will never fire 'stable'
 
       var lastMove = physicsSimulator.step();
