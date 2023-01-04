@@ -37,16 +37,21 @@ function createLayout(graph, physicsSettings) {
   listenToEvents();
 
   var wasStable = false;
+  var initialStep = 0;
+
+  // below is a custom function that the user can create to control when to freeze the layout
+  var checkIfStable = typeof physicsSettings.checkIfStable === "function" ? physicsSettings.checkIfStable : (currentRatio, initialStep) => currentRatio <= 0.01
+
+  graph.on("changed", () => initialStep = 0) // reset the initial step after changing the graph
 
   var api = {
     /**
      * Performs one step of iterative layout algorithm
      *
-     * @returns {boolean} true if the system should be considered stable; False otherwise.
+     * @returns {boolean} true if the system should be considered stable; Flase otherwise.
      * The system is stable if no further call to `step()` can improve the layout.
      */
     step: function() {
-        console.log("making step; edit works");
       if (bodiesCount === 0) {
         updateStableStatus(true);
         return true;
@@ -61,10 +66,13 @@ function createLayout(graph, physicsSettings) {
       // Allow listeners to perform low-level actions after nodes are updated.
       api.fire('step');
 
-      var ratio = lastMove/bodiesCount;
-      var isStableNow = ratio <= 0.01; // TODO: The number is somewhat arbitrary...
-      updateStableStatus(isStableNow);
+      // this is changing to 0 when graph changes
+      // so, the biggest delta (which is always on the first step) gets saved
+      initialStep = initialStep < lastMove ? lastMove : initialStep;
 
+      var ratio = lastMove/bodiesCount;
+      var isStableNow = checkIfStable(ratio, initialStep);
+      updateStableStatus(isStableNow);
 
       return isStableNow;
     },
