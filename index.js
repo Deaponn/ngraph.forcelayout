@@ -33,12 +33,11 @@ function createLayout(graph, physicsSettings) {
   // Initialize physics with what we have in the graph:
   initPhysics();
   listenToEvents();
+  
+  // below is a custom function that the user can create to control when to freeze the layout
+  var checkIfStable = (!!physicsSettings && typeof physicsSettings.checkIfStable === "function") ? physicsSettings.checkIfStable : (currentRatio) => currentRatio <= 0.01;
 
-  var wasStable = false;
-  var movementData = {
-    bodiesCount: 0,
-    stepsList: [],
-  };
+  graph.on("changed", () => initialStep = 0); // reset the initial step after changing the graph
 
   var api = {
     /**
@@ -48,8 +47,10 @@ function createLayout(graph, physicsSettings) {
      * The system is stable if no further call to `step()` can improve the layout.
      */
     step: function() {
-      if (bodiesCount === 0) return true; // TODO: This will never fire 'stable'
-      movementData.bodiesCount = bodiesCount
+      if (bodiesCount === 0) {
+        updateStableStatus(true);
+        return true;
+      }
 
       var lastMove = physicsSimulator.step();
 
@@ -60,14 +61,12 @@ function createLayout(graph, physicsSettings) {
       // Allow listeners to perform low-level actions after nodes are updated.
       api.fire('step');
 
+      // this is changing to 0 when graph changes
+      // so, the biggest delta (which is always on the first step) gets saved
+      initialStep = initialStep < lastMove ? lastMove : initialStep;
+
       var ratio = lastMove/bodiesCount;
-      var isStableNow = ratio <= 0.01; // TODO: The number is somewhat arbitrary...
-      movementData.stepsList.push(ratio)
-
-      if (movementData.stepsList.length % 100 === 0) console.log(`Simulation is on ${movementData.stepsList.length} steps already. Current ratio is ${ratio}.`);
-      if (movementData.stepsList.length % 1000 === 0) console.log(movementData)
-
-      if (isStableNow) console.log(movementData);
+      var isStableNow = checkIfStable(ratio, initialStep);
 
       if (wasStable !== isStableNow) {
         wasStable = isStableNow;
