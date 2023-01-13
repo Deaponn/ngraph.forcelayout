@@ -39,7 +39,7 @@ function createLayout(graph, physicsSettings) {
   var initialStep = 0;
 
   // below is a custom function that the user can create to control when to freeze the layout
-  var checkIfStable = typeof physicsSettings.checkIfStable === "function" ? physicsSettings.checkIfStable : (currentRatio) => currentRatio <= 0.01;
+  var checkIfStable = (!!physicsSettings && typeof physicsSettings.checkIfStable === "function") ? physicsSettings.checkIfStable : (currentRatio) => currentRatio <= 0.01;
 
   graph.on("changed", () => initialStep = 0); // reset the initial step after changing the graph
 
