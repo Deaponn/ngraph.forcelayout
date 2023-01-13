@@ -39,6 +39,8 @@ function createLayout(graph, physicsSettings) {
 
   graph.on("changed", () => initialStep = 0); // reset the initial step after changing the graph
 
+  var wasStable = false;
+
   var api = {
     /**
      * Performs one step of iterative layout algorithm
