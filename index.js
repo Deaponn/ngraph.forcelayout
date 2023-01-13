@@ -33,7 +33,7 @@ function createLayout(graph, physicsSettings) {
   // Initialize physics with what we have in the graph:
   initPhysics();
   listenToEvents();
-  
+
   // below is a custom function that the user can create to control when to freeze the layout
   var checkIfStable = (!!physicsSettings && typeof physicsSettings.checkIfStable === "function") ? physicsSettings.checkIfStable : (currentRatio) => currentRatio <= 0.01;
 
@@ -47,10 +47,7 @@ function createLayout(graph, physicsSettings) {
      * The system is stable if no further call to `step()` can improve the layout.
      */
     step: function() {
-      if (bodiesCount === 0) {
-        updateStableStatus(true);
-        return true;
-      }
+      if (bodiesCount === 0) return true;
 
       var lastMove = physicsSimulator.step();
 
